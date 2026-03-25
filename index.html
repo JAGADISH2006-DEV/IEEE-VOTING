@@ -3,59 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IEEE VIT Student Election</title>
+  <title>IEEE VIT Election System</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="app-header">
-    <h1>IEEE VIT Student Election Portal</h1>
-    <p>Vote for Chairman and panel roles — Velammal Institute of Technology</p>
+    <h1>IEEE VIT Election System</h1>
+    <p>Velammal Institute of Technology — Student Chapter Elections</p>
   </header>
 
   <main class="container">
+    <section class="card election-meta">
+      <h2>Election Information</h2>
+      <div class="meta-grid">
+        <p><strong>Election Name:</strong> IEEE Student Office Bearer Election</p>
+        <p><strong>Positions:</strong> Chairman + 4 Panel Roles</p>
+        <p><strong>Voting Mode:</strong> One ballot per IEEE member</p>
+        <p><strong>Status:</strong> <span id="election-status">Open</span></p>
+      </div>
+    </section>
+
     <section class="card">
       <h2>Voter Verification</h2>
       <form id="voter-form" class="form-grid">
         <label>
           Full Name
-          <input type="text" id="name" required placeholder="Enter your name" />
+          <input type="text" id="name" name="name" required placeholder="Enter your full name" />
         </label>
 
         <label>
           Register Number
-          <input type="text" id="regNo" required placeholder="e.g. 23CSE102" />
+          <input type="text" id="regNo" name="regNo" required placeholder="e.g. 23CSE102" />
         </label>
 
         <label>
           IEEE Member ID
-          <input type="text" id="memberId" required placeholder="IEEE Membership ID" />
+          <input type="text" id="memberId" name="memberId" required placeholder="e.g. 98765432" />
         </label>
 
-        <button type="submit">Start Voting</button>
+        <button type="submit">Proceed to Ballot</button>
       </form>
       <p id="voter-message" class="message"></p>
     </section>
 
     <section id="ballot-section" class="card hidden">
-      <h2>Ballot</h2>
+      <h2>Cast Your Vote</h2>
+      <p class="sub">Select exactly one candidate per role.</p>
       <form id="ballot-form">
         <div id="roles-container"></div>
-        <button type="submit" class="vote-btn">Submit Vote</button>
+        <button type="submit" class="vote-btn">Submit Ballot</button>
       </form>
       <p id="ballot-message" class="message"></p>
+      <p id="receipt-message" class="receipt"></p>
     </section>
 
     <section class="card">
-      <h2>Election Dashboard</h2>
-      <p class="sub">Visible for demo/admin use on this prototype.</p>
-      <button id="show-results">View Live Results</button>
-      <button id="reset-results" class="danger">Reset Election Data</button>
+      <h2>Election Dashboard (Admin / Demo)</h2>
+      <div class="button-row">
+        <button id="show-results">Refresh Results</button>
+        <button id="export-results">Export JSON</button>
+        <button id="toggle-election" class="secondary">Close Election</button>
+        <button id="reset-results" class="danger">Reset All Data</button>
+      </div>
+      <div id="stats" class="stats"></div>
       <div id="results" class="results"></div>
     </section>
   </main>
 
   <footer>
-    <small>Built for IEEE student chapter election process.</small>
+    <small>Prototype for IEEE VIT chapter elections. Move to backend + DB for production.</small>
   </footer>
 
   <script src="script.js"></script>

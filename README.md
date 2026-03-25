@@ -1,33 +1,43 @@
-# IEEE VIT Voting Web App
+# IEEE VIT Election Web App
 
-A lightweight web application for IEEE Velammal Institute of Technology student elections.
+A browser-based election app for IEEE student chapter elections at Velammal Institute of Technology.
 
-## Features
+## What this improved version includes
 
-- Voter verification form (name, register number, IEEE member ID)
-- Ballot for multiple roles:
+- Voter verification with:
+  - Full name
+  - Register number validation
+  - IEEE member ID validation (6–12 digits)
+- Ballot for 5 roles:
   - Chairman
   - Vice Chairman
   - Secretary
   - Treasurer
   - Technical Lead
-- One vote per IEEE Member ID (stored in browser localStorage)
-- Live result dashboard
-- Reset election data option for admins/demo
+- Duplicate vote prevention by **both** IEEE Member ID and Register Number
+- Election state management (Open / Closed)
+- Live statistics dashboard (unique members, ballots, status)
+- Result board with current leaders highlighted
+- Export results + ballot log as JSON
+- Admin reset option for demo/testing
 
-## Run
+## Run locally
 
-Since this is a static web app, just open `index.html` in a browser.
+This is a static app, so either:
 
-You can also run a quick local server:
+1. Open `index.html` directly in your browser, or
+2. Serve with a local server:
 
 ```bash
 python3 -m http.server 8080
 ```
 
-Then visit: <http://localhost:8080>
+Open: <http://localhost:8080>
 
-## Notes
+## Data storage
 
-- This prototype uses browser localStorage, so data is per browser/device.
-- For production, replace localStorage with a secure backend + authentication.
+All data is saved in browser `localStorage` for this prototype.
+
+### Production recommendation
+
+Use a secure backend + database + authentication before real elections.
