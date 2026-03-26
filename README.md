@@ -2,7 +2,7 @@
 
 A browser-based election app for IEEE student chapter elections at Velammal Institute of Technology.
 
-## What this improved version includes
+## Highlights
 
 - Voter verification with:
   - Full name
@@ -21,6 +21,14 @@ A browser-based election app for IEEE student chapter elections at Velammal Inst
 - Export results + ballot log as JSON
 - Admin reset option for demo/testing
 
+## Project structure
+
+- `index.html` — UI layout
+- `styles.css` — styling
+- `election-core.js` — reusable, testable election utility logic
+- `script.js` — browser UI wiring and storage behavior
+- `tests/election-core.test.js` — Node.js unit tests for core election logic
+
 ## Run locally
 
 This is a static app, so either:
@@ -34,10 +42,16 @@ python3 -m http.server 8080
 
 Open: <http://localhost:8080>
 
+## Run tests
+
+```bash
+node tests/election-core.test.js
+```
+
 ## Data storage
 
 All data is saved in browser `localStorage` for this prototype.
 
-### Production recommendation
+## Production recommendation
 
 Use a secure backend + database + authentication before real elections.

@@ -1,7 +1,7 @@
 const ELECTION_CONFIG = {
   name: "IEEE Student Office Bearer Election",
   roles: {
-    "Chairman": [
+    Chairman: [
       { name: "A. Harish", dept: "CSE", year: "III" },
       { name: "B. Nivetha", dept: "ECE", year: "III" },
       { name: "C. Pradeep", dept: "IT", year: "III" }
@@ -11,12 +11,12 @@ const ELECTION_CONFIG = {
       { name: "B. Karthika", dept: "CSE", year: "II" },
       { name: "C. Yazhini", dept: "AIDS", year: "III" }
     ],
-    "Secretary": [
+    Secretary: [
       { name: "A. Mohammed Irfan", dept: "MECH", year: "III" },
       { name: "B. Meena", dept: "CSE", year: "II" },
       { name: "C. Vishal", dept: "ECE", year: "III" }
     ],
-    "Treasurer": [
+    Treasurer: [
       { name: "A. Sanjana", dept: "IT", year: "III" },
       { name: "B. Rajkumar", dept: "CIVIL", year: "III" },
       { name: "C. Nandhini", dept: "CSE", year: "II" }
@@ -81,14 +81,7 @@ function updateElectionStatusUI() {
 
 function initializeStorage() {
   if (!getStore(STORAGE_KEYS.votes, null)) {
-    const initialVotes = {};
-    Object.entries(ELECTION_CONFIG.roles).forEach(([role, candidates]) => {
-      initialVotes[role] = {};
-      candidates.forEach((candidate) => {
-        initialVotes[role][candidate.name] = 0;
-      });
-    });
-    setStore(STORAGE_KEYS.votes, initialVotes);
+    setStore(STORAGE_KEYS.votes, ElectionCore.createInitialVotes(ELECTION_CONFIG.roles));
   }
 
   if (!getStore(STORAGE_KEYS.votedMembers, null)) {
@@ -141,50 +134,19 @@ function createBallot() {
   });
 }
 
-function normalize(value) {
-  return value.toString().trim().toLowerCase();
-}
-
 function validateVoter(formData) {
-  if (!isElectionOpen()) {
-    return { ok: false, message: "Election is currently closed." };
-  }
-
-  const name = formData.get("name")?.toString().trim();
-  const regNo = formData.get("regNo")?.toString().trim().toUpperCase();
-  const memberId = formData.get("memberId")?.toString().trim();
-
-  if (!name || !regNo || !memberId) {
-    return { ok: false, message: "Please fill in all voter details." };
-  }
-
-  if (!/^\d{6,12}$/.test(memberId)) {
-    return { ok: false, message: "IEEE Member ID should be 6–12 digits." };
-  }
-
-  if (!/^[A-Z0-9]{6,15}$/.test(regNo)) {
-    return { ok: false, message: "Register number format looks invalid." };
-  }
-
-  const votedMembers = getStore(STORAGE_KEYS.votedMembers, []);
-  const votedRegNos = getStore(STORAGE_KEYS.votedRegNos, []);
-
-  if (votedMembers.includes(normalize(memberId))) {
-    return { ok: false, message: "This IEEE Member ID has already voted." };
-  }
-
-  if (votedRegNos.includes(normalize(regNo))) {
-    return { ok: false, message: "This Register Number has already voted." };
-  }
-
-  return {
-    ok: true,
-    voter: {
-      name,
-      regNo,
-      memberId
+  return ElectionCore.validateVoterInput(
+    {
+      name: formData.get("name"),
+      regNo: formData.get("regNo"),
+      memberId: formData.get("memberId")
+    },
+    {
+      electionOpen: isElectionOpen(),
+      votedMembers: getStore(STORAGE_KEYS.votedMembers, []),
+      votedRegNos: getStore(STORAGE_KEYS.votedRegNos, [])
     }
-  };
+  );
 }
 
 function collectSelections(formElement) {
@@ -209,15 +171,13 @@ function generateReceiptId() {
 
 function storeVote(voter, selections) {
   const votes = getStore(STORAGE_KEYS.votes, {});
-  Object.entries(selections).forEach(([role, candidate]) => {
-    votes[role][candidate] += 1;
-  });
+  const updatedVotes = ElectionCore.tallyVotes(votes, selections);
 
   const votedMembers = getStore(STORAGE_KEYS.votedMembers, []);
-  votedMembers.push(normalize(voter.memberId));
+  votedMembers.push(ElectionCore.normalize(voter.memberId));
 
   const votedRegNos = getStore(STORAGE_KEYS.votedRegNos, []);
-  votedRegNos.push(normalize(voter.regNo));
+  votedRegNos.push(ElectionCore.normalize(voter.regNo));
 
   const ballots = getStore(STORAGE_KEYS.ballots, []);
   const receiptId = generateReceiptId();
@@ -230,7 +190,7 @@ function storeVote(voter, selections) {
     selections
   });
 
-  setStore(STORAGE_KEYS.votes, votes);
+  setStore(STORAGE_KEYS.votes, updatedVotes);
   setStore(STORAGE_KEYS.votedMembers, votedMembers);
   setStore(STORAGE_KEYS.votedRegNos, votedRegNos);
   setStore(STORAGE_KEYS.ballots, ballots);
